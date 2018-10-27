@@ -468,109 +468,158 @@ k=0;
       _eepromWrites++;  
     }
 
-    void _setPresetQty(int r){
-    delay(150);
-    int nx=0; int px=6; String _val1; int d0,d1,d2,d3,d4,d5,d6;
-    _val1="";d0=0;d1=0;d2=0;d3=0;d4=0;d5=0;d6=0;
-    float new_val;
-    lcd.clear();
-    lcd.setCursor(0,0);lcd.print("Old Qty=");lcd.print(preset_qty, dec_preset);
-    lcd.setCursor(0,1);lcd.print("New =        ");
-    lcd.setCursor(0,3);lcd.print("3=Submit 5=Back");
+void _setPresetQty(int r) {
+	delay(150);
+	int nx = 0; 
+	int px = 6; 
+	String _val1; 
+	int d0, d1, d2, d3, d4, d5, d6;
+	_val1 = "";
+	d0 = 0;
+	d1 = 0;
+	d2 = 0;
+	d3 = 0;
+	d4 = 0;
+	d5 = 0;
+	d6 = 0;
+	float new_val;
+	lcd.clear();
+	lcd.setCursor(0, 0);
+	lcd.print("Old Qty=");
+	lcd.print(preset_qty, dec_preset);
+	lcd.setCursor(0, 1);
+	lcd.print("New =        ");
+	lcd.setCursor(0, 3);
+	lcd.print("3=Submit 5=Back");
 
-    while(r==0) {
-    if (px < 6) {
-		px = 6;
-	}
-    lcd.setCursor(px, 1); 
-    if(digitalRead(ButtonA) == LOW) {
+	while(r==0) {
+		if (px < 6) {
+			px = 6;
+		}
+		
+		lcd.setCursor(px, 1); 
+		
+		if (digitalRead(ButtonA) == LOW) {
+			if (digitalRead(ButtonE) == LOW) {
+				r = 1;
+				lcd.clear();
+				_back(3);
+				xcount = 0;
+				loop();
+			}
+			
+			nx ++; 
+			
+			if (nx > 9) {
+				nx = 0;
+			}
+			
+			lcd.print(nx);
+			
+			if (px == 6) {
+				d0 = nx;
+			}
+			if (px == 7) {
+				d1 = nx;
+			}
+			if (px == 8) { 
+				d2 = nx;
+			}
+			if (px == 9) {
+				d3 = nx;
+			}
+			if (px == 10) {
+				d4 = nx;
+			}
+			if (px == 11) {
+				d5 = nx;
+			}
+			if (px==12) {
+				d6 = nx;
+			}
+		}
+		
+		if (digitalRead(ButtonB) == LOW) {
+			px ++;
+			if (px > 12) {
+				px = 6;
+			}
+		} 
+
+		lcd.setCursor(6, 2);
+		lcd.print("         ");
+		lcd.setCursor(px, 2);
+		lcd.print("^");
+		lcd.setCursor(7, 0);
+		lcd.print(_val1);
+
+		if (digitalRead(ButtonC) == LOW) {
+			_val1 = "";
+			float xx = (d0 * 1000000) + (d1 * 100000) + (d2 * 10000) + (d3 * 1000) + (d4 * 100) + (d5 * 10) + (d6 * 1);
+			int rr = 0;
+			
+			while (rr == 0) {
+				lcd.clear();
+				lcd.setCursor(0, 0);
+				lcd.print(xx, 2);
+				lcd.setCursor(0, 1);
+				lcd.print("Accept?");
+				lcd.setCursor(0, 2);
+				lcd.print("1=Yes, 2=No");
+				lcd.setCursor(0, 3); //set cursor on 0 /first col and 0 / first line
+				lcd.print("PRESS MENU1 TO START");
+
+				if (digitalRead(ButtonA) == LOW) {
+					while (!eeprom_is_ready());
+					EEPROM.writeFloat(preset_qty_reg, xx);
+					while (!eeprom_is_ready());
+					preset_qty = EEPROM.readFloat(preset_qty_reg);
+					_val1 = "";
+					d0 = 0;
+					d1 = 0;
+					d2 = 0;
+					d3 = 0;
+					d4 = 0;
+					d5 = 0;
+					d6 = 0;
+					_back(2);
+					r = 1;
+					rr = 1;
+					lcd.clear();
+					xcount=  0;
+					delay(200);
+					loop();
+					lcd.setCursor(0, 0); //set cursor on 0 /first col and 0 / first line
+					lcd.print("PRESS MENU1 TO START");
+				}
+				
+				if (digitalRead(ButtonB) == LOW) {
+					_back(2);
+					r = 1;
+					rr = 1;
+					lcd.clear();
+					xcount = 0;
+					delay(200);
+					loop();
+					lcd.setCursor(0, 0); //set cursor on 0 /first col and 0 / first line
+					lcd.print("PRESS MENU1 TO START");
+				}
+				
+				delay(150);
+			}
+		}
+		
 		if (digitalRead(ButtonE) == LOW) {
-			r = 1;
+			delay(250);
 			lcd.clear();
-			_back(3);
+			r = 1;
 			xcount = 0;
 			loop();
 		}
-		nx ++; 
-		if (nx > 9) {
-			nx = 0;
-		}
-		lcd.print(nx);
-		if (px == 6) {
-			d0 = nx;
-		}
-		if (px == 7) {
-			d1 = nx;
-		}
-		if (px == 8) { 
-			d2 = nx;
-		}
-		if (px == 9) {
-			d3 = nx;
-		}
-		if (px == 10) {
-			d4 = nx;
-		}
-		if (px == 11) {
-			d5 = nx;
-		}
-		if (px==12) {
-			d6 = nx;
-		}
-	}       
-	if (digitalRead(ButtonB) == LOW) {
-		px ++;
-		if (px > 12) {
-			px = 6;
-		}
-    } 
-    lcd.setCursor(6, 2);
-	lcd.print("         ");
-    lcd.setCursor(px, 2);
-	lcd.print("^");
-    lcd.setCursor(7, 0);
-	lcd.print(_val1);
-    
-    if (digitalRead(ButtonC) == LOW) {
-    _val1 = "";
-    float xx = (d0 * 1000000) + (d1 * 100000) + (d2 * 10000) + (d3 * 1000) + (d4 * 100) + (d5 * 10) + (d6 * 1);
-    int rr = 0;  
-    while (rr == 0) {
-		lcd.clear();
-		lcd.setCursor(0, 0);
-		lcd.print(xx, 2);
-		lcd.setCursor(0, 1);
-		lcd.print("Accept?");
-		lcd.setCursor(0, 2);
-		lcd.print("1=Yes, 2=No");
-		lcd.setCursor(0, 3); //set cursor on 0 /first col and 0 / first line
-		lcd.print("PRESS MENU1 TO START");
-
-		if(digitalRead(ButtonA)==LOW){
-		while(!eeprom_is_ready());
-		EEPROM.writeFloat(preset_qty_reg,xx );
-		while(!eeprom_is_ready());
-		preset_qty=EEPROM.readFloat(preset_qty_reg);
-		_val1="";d0=0;d1=0;d2=0;d3=0;d4=0;d5=0;d6=0;
-		_back(2);r=1;rr=1;
-		lcd.clear();xcount=0;delay(200);loop();
-		lcd.setCursor(0,0); //set cursor on 0 /first col and 0 / first line
-		lcd.print("PRESS MENU1 TO START");
-		}
-		if(digitalRead(ButtonB)==LOW){
-		_back(2);r=1;rr=1;
-		lcd.clear();xcount=0;delay(200);loop();
-		lcd.setCursor(0,0); //set cursor on 0 /first col and 0 / first line
-		lcd.print("PRESS MENU1 TO START");
-				
-		}
+		
 		delay(150);
 	}
-     }
-      if(digitalRead(ButtonE)==LOW){delay(250);lcd.clear();r=1;xcount=0;loop();}
-      delay(150);
-        }
-     }
+}
 
   void _calMenu(int r){       //Enter cal mode
     lcd.clear();
