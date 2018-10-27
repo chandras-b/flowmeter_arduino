@@ -117,8 +117,7 @@ int power_mode=1;
 
 int nnn;
 
-void setup()
-{
+void setup() {
   pinMode ( DCgone, INPUT ); // set pin 11 as input for power fail
 digitalWrite(DCgone, HIGH);  // sets pullup resistor
 //EEPROM.setMaxAllowedWrites(29);
